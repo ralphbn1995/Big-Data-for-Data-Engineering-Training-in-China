@@ -1,0 +1,4 @@
+# Python dependencies – Session 2 Lab
+# Install with: pip install -r requirements.txt
+kafka-python-ng>=2.0.2   # producer (Python 3.12+ compatible fork of kafka-python)
+confluent-kafka>=2.0.0   # consumers and lag monitor (Python 3.14 compatible)
