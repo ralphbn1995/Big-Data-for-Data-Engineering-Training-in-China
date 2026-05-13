@@ -1,6 +1,6 @@
 # Big Data Engineering Programme
 
-Course materials and lab correction code for the **Big Data Engineering** programme at WUT (Warsaw University of Technology).
+Course materials and lab correction code for the **Big Data Engineering** programme at WUT (Wuhan University of Technology).
 
 The course covers distributed data architectures, streaming pipelines, ETL, and large-scale data processing across 7 sessions.
 
