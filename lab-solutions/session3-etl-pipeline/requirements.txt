@@ -1,0 +1,5 @@
+# Python dependencies – Session 3 Lab
+# Install with: pip install -r requirements.txt
+pyspark==3.5.3           # 3.4.x removed typing.io, broken on Python 3.12+
+kafka-python-ng>=2.0.2   # replaces kafka-python (broken on Python 3.12+)
+confluent-kafka>=2.0.0   # consumers (Python 3.14 compatible)
