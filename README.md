@@ -18,7 +18,9 @@ The course covers distributed data architectures, streaming pipelines, ETL, and 
 │   ├── session-03-course-and-practical-work.pdf
 │   ├── session-03-math-foundations-questions.pdf
 │   ├── session-04-course-and-practical-work.pdf
-│   └── session-04-math-foundations-questions.pdf
+│   ├── session-04-math-foundations-questions.pdf
+│   ├── session-05-course-and-practical-work.pdf
+│   └── Comprehensive Synthesis Exercise - Student Version.pdf
 │
 └── lab-solutions/                           # Full corrected code for each lab session
     ├── session-01-kafka-intro/              # Lab 1: Local 3-broker Kafka cluster (KRaft)
@@ -35,12 +37,20 @@ The course covers distributed data architectures, streaming pipelines, ETL, and 
     │   ├── python/                          # Producer, consumers (per-msg & batch), lag monitor
     │   └── scripts/                         # Topic setup, rebalance demo, offset reset
     │
-    └── session3-etl-pipeline/              # Lab 3: Kafka + Spark Structured Streaming ETL
+    ├── session3-etl-pipeline/              # Lab 3: Kafka + Spark Structured Streaming ETL
+    │   ├── docker-compose.yml
+    │   ├── requirements.txt
+    │   ├── NOTES.md                         # Code review, bug fixes, verified output
+    │   ├── python/                          # Producer, ETL pipeline, batch pipeline, output reader
+    │   └── scripts/                         # Setup, run pipeline, cleanup
+    │
+    └── session-04-data-lake/               # Lab 4: Three-zone Data Lake with Spark SQL
         ├── docker-compose.yml
         ├── requirements.txt
         ├── NOTES.md                         # Code review, bug fixes, verified output
-        ├── python/                          # Producer, ETL pipeline, batch pipeline, output reader
-        └── scripts/                         # Setup, run pipeline, cleanup
+        ├── README.md                        # Full lab guide with Windows setup
+        ├── python/                          # Producer, pipeline, consumption zone, queries, compaction
+        └── scripts/                         # Setup, cleanup
 ```
 
 ---
@@ -52,8 +62,9 @@ The course covers distributed data architectures, streaming pipelines, ETL, and 
 | 1 | Introduction to Data Engineering & Distributed Architectures | PDF | `lab-solutions/session-01-kafka-intro/` |
 | 2 | Kafka and Distributed Messaging | PDF | `lab-solutions/session-02-kafka-pipeline/` |
 | 3 | ETL Pipelines | PDF | `lab-solutions/session3-etl-pipeline/` |
-| 4 | *(course materials available)* | PDF | — |
-| 5–7 | *(coming soon)* | — | — |
+| 4 | Designing and Managing Data Lakes | PDF | `lab-solutions/session-04-data-lake/` |
+| 5 | REST APIs | PDF | — |
+| 6–7 | *(coming soon)* | — | — |
 
 ---
 
@@ -131,12 +142,44 @@ python python/read_output.py         # Terminal 3 — inspect Parquet output
 
 ---
 
+### Session 4 — Three-Zone Data Lake with Spark SQL
+
+**Folder:** `lab-solutions/session-04-data-lake/`
+
+Full corrected code for the lab that builds a **Medallion Architecture (Bronze → Silver → Gold)** data lake on top of Kafka + Spark Structured Streaming. Covers:
+
+- Kafka producer generating high-volume sensor telemetry
+- Raw zone (Bronze): JSON, partitioned by ingestion time — immutable audit trail
+- Curated zone (Silver): Parquet + Snappy, partitioned by event time and sensor type — validated, queryable data
+- Consumption zone (Gold): pre-aggregated daily Parquet — BI-ready
+- Spark SQL queries with partition pruning and pruning benchmarks (~3× speedup)
+- Lake explorer for browsing Hive-style directory trees and detecting the small file problem
+- Compaction script to merge small files with `coalesce`
+
+**Quick start (Windows):**
+```bash
+cd lab-solutions/session-04-data-lake
+docker compose up -d
+export JAVA_HOME="/c/Program Files/Microsoft/jdk-21.0.10.7-hotspot"
+export PATH="$JAVA_HOME/bin:$PATH"
+pip install pyspark==3.5.3 kafka-python-ng confluent-kafka
+python python/datalake_pipeline.py         # Terminal 1 — start pipeline
+python python/producer.py --count 500      # Terminal 2 — generate events
+python python/consumption_zone.py          # after 2+ batches
+python python/query_lake.py               # Spark SQL + pruning benchmark
+```
+
+> See the `README.md` inside the folder for Windows-specific Java and Hadoop setup (`winutils.exe`, `hadoop.dll`, checkpoint wipe steps).
+
+---
+
 ## Course Materials
 
 The `course-materials/` folder contains PDFs for each session:
 
 - **`session-XX-course-and-practical-work.pdf`** — lecture slides and practical exercises
 - **`session-XX-math-foundations-questions.pdf`** — mathematical foundations problem sets
+- **`Comprehensive Synthesis Exercise - Student Version.pdf`** — end-of-programme capstone exercise covering all sessions
 
 ---
 
